@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fresas con Crema – Tienda</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --rose:#e8547a;--rose-dk:#c03a5e;--blush:#fce8ee;--cream:#fff8f5;
+  --text:#2d1a22;--muted:#9c7a87;--border:#f0d5dc;--white:#fff;
+  --green:#2db87a;--shadow:0 8px 40px rgba(232,84,122,.13);
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh}
+
+/* ── NAV ── */
+nav{
+  background:var(--white);border-bottom:1px solid var(--border);
+  padding:.9rem 2rem;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(232,84,122,.08)
+}
+.logo{font-family:'Playfair Display',serif;font-size:1.4rem;color:var(--rose);font-style:italic;text-decoration:none}
+.nav-right{display:flex;align-items:center;gap:1.5rem}
+.nav-link{color:var(--muted);text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s}
+.nav-link:hover{color:var(--rose)}
+.cart-btn{
+  background:var(--text);color:var(--white);border:none;
+  padding:.6rem 1.1rem;border-radius:50px;font-family:inherit;font-size:.875rem;
+  font-weight:500;cursor:pointer;display:flex;align-items:center;gap:.5rem;
+  transition:background .2s,transform .15s;position:relative
+}
+.cart-btn:hover{background:var(--rose);transform:translateY(-1px)}
+.cart-count{
+  background:var(--rose);color:var(--white);border-radius:50%;
+  width:20px;height:20px;font-size:.7rem;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:transform .2s
+}
+.cart-count.bump{transform:scale(1.4)}
+
+/* ── HERO ── */
+.hero{
+  text-align:center;padding:3.5rem 1rem 2.5rem;
+  background:linear-gradient(160deg,var(--blush) 0%,var(--cream) 60%)
+}
+.hero h1{font-family:'Playfair Display',serif;font-size:2.6rem;line-height:1.15;margin-bottom:.5rem}
+.hero h1 span{color:var(--rose)}
+.hero p{color:var(--muted);font-weight:300;max-width:420px;margin:0 auto}
+
+/* ── FILTERS ── */
+.filters{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;padding:1.5rem 1rem .5rem}
+.filter-btn{
+  background:var(--white);border:1.5px solid var(--border);border-radius:50px;
+  padding:.4rem 1rem;font-family:inherit;font-size:.8125rem;font-weight:500;
+  cursor:pointer;color:var(--muted);transition:all .2s
+}
+.filter-btn.active,.filter-btn:hover{background:var(--rose);color:var(--white);border-color:var(--rose)}
+
+/* ── GRID ── */
+.grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:1.25rem;padding:1.5rem 2rem 4rem;max-width:1100px;margin:0 auto
+}
+
+/* ── CARD ── */
+.card{
+  background:var(--white);border-radius:20px;overflow:hidden;
+  box-shadow:0 2px 16px rgba(232,84,122,.08);
+  transition:transform .22s,box-shadow .22s;display:flex;flex-direction:column
+}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.card-img{
+  height:160px;display:flex;align-items:center;justify-content:center;
+  font-size:4rem;background:var(--blush);position:relative;overflow:hidden
+}
+.card-img::after{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(255,255,255,.3) 0%,transparent 70%)
+}
+.badge{
+  position:absolute;top:.6rem;right:.6rem;
+  background:var(--rose);color:var(--white);font-size:.7rem;font-weight:700;
+  padding:.2rem .55rem;border-radius:50px;letter-spacing:.03em
+}
+.card-body{padding:1rem 1rem 1.2rem;flex:1;display:flex;flex-direction:column}
+.card-body h3{font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:.2rem}
+.card-body p{font-size:.8rem;color:var(--muted);font-weight:300;flex:1;margin-bottom:.75rem;line-height:1.5}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.price{font-size:1.15rem;font-weight:700;color:var(--rose)}
+.price small{font-size:.75rem;font-weight:400;color:var(--muted)}
+.add-btn{
+  background:var(--text);color:var(--white);border:none;
+  width:36px;height:36px;border-radius:50%;font-size:1.25rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background .2s,transform .15s;flex-shrink:0
+}
+.add-btn:hover{background:var(--rose);transform:scale(1.1)}
+
+/* ── CART DRAWER ── */
+.overlay{
+  position:fixed;inset:0;background:rgba(45,26,34,.4);
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .3s
+}
+.overlay.open{opacity:1;pointer-events:all}
+.drawer{
+  position:fixed;top:0;right:0;height:100%;width:min(400px,100%);
+  background:var(--white);z-index:300;transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.22,1,.36,1);
+  display:flex;flex-direction:column;box-shadow:-8px 0 40px rgba(45,26,34,.12)
+}
+.drawer.open{transform:translateX(0)}
+.drawer-header{
+  padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between
+}
+.drawer-header h2{font-family:'Playfair Display',serif;font-size:1.2rem}
+.close-btn{
+  background:none;border:none;font-size:1.5rem;cursor:pointer;
+  color:var(--muted);line-height:1;transition:color .2s
+}
+.close-btn:hover{color:var(--rose)}
+.drawer-body{flex:1;overflow-y:auto;padding:1rem 1.5rem}
+.empty-msg{text-align:center;padding:3rem 1rem;color:var(--muted);font-size:.9rem}
+.empty-msg .big{font-size:3rem;margin-bottom:.5rem}
+
+/* cart item */
+.cart-item{
+  display:flex;align-items:center;gap:.75rem;padding:.75rem 0;
+  border-bottom:1px solid var(--border)
+}
+.cart-item:last-child{border-bottom:none}
+.ci-emoji{font-size:2rem;width:48px;height:48px;background:var(--blush);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ci-info{flex:1;min-width:0}
+.ci-info h4{font-size:.875rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ci-info span{font-size:.8rem;color:var(--rose);font-weight:600}
+.ci-controls{display:flex;align-items:center;gap:.5rem}
+.ci-btn{
+  background:var(--blush);border:none;width:28px;height:28px;border-radius:8px;
+  font-size:1rem;cursor:pointer;color:var(--rose);font-weight:700;
+  display:flex;align-items:center;justify-content:center;transition:background .2s
+}
+.ci-btn:hover{background:var(--rose);color:var(--white)}
+.ci-qty{font-size:.875rem;font-weight:600;min-width:20px;text-align:center}
+.ci-del{background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;margin-left:.25rem;transition:color .2s}
+.ci-del:hover{color:#e05555}
+
+/* cart footer */
+.drawer-footer{padding:1.25rem 1.5rem;border-top:1px solid var(--border)}
+.subtotal-row{display:flex;justify-content:space-between;font-size:.875rem;margin-bottom:.4rem}
+.subtotal-row.total{font-weight:700;font-size:1rem;color:var(--text)}
+.checkout-btn{
+  width:100%;padding:.875rem;margin-top:1rem;
+  background:linear-gradient(135deg,var(--rose),var(--rose-dk));
+  color:var(--white);border:none;border-radius:14px;
+  font-family:inherit;font-size:.9375rem;font-weight:500;
+  cursor:pointer;box-shadow:0 4px 18px rgba(232,84,122,.35);
+  transition:transform .15s,box-shadow .15s
+}
+.checkout-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(232,84,122,.45)}
+.checkout-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--text);color:var(--white);padding:.65rem 1.25rem;
+  border-radius:50px;font-size:.875rem;font-weight:500;z-index:999;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),opacity .3s;opacity:0;white-space:nowrap
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .hero h1{font-size:1.8rem}
+  .grid{padding:1rem 1rem 3rem;grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+  .card-img{height:120px;font-size:3rem}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">🍓 Fresas con Crema</a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-link">Inicio</a>
+    <a href="Contacto.html" class="nav-link">Nosotros</a>
+    <button class="cart-btn" id="cartBtn" onclick="toggleDrawer(true)">
+      🛒 Carrito <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <h1>Postres que <span>enamoran</span> 🍓</h1>
+  <p>Hechos con fruta fresca y crema artesanal. Pide tu antojo favorito hoy.</p>
+</section>
+
+<!-- FILTERS -->
+<div class="filters">
+  <button class="filter-btn active" onclick="filter(this,'todos')">Todos</button>
+  <button class="filter-btn" onclick="filter(this,'fresas')">Fresas</button>
+  <button class="filter-btn" onclick="filter(this,'melocoton')">Melocotón</button>
+  <button class="filter-btn" onclick="filter(this,'cereza')">Cereza</button>
+  <button class="filter-btn" onclick="filter(this,'mango')">Mango</button>
+  <button class="filter-btn" onclick="filter(this,'especial')">Especiales</button>
+</div>
+
+<!-- PRODUCT GRID -->
+<div class="grid" id="grid"></div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="toggleDrawer(false)"></div>
+
+<!-- CART DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <h2>Tu Carrito</h2>
+    <button class="close-btn" onclick="toggleDrawer(false)">×</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer" id="drawerFooter"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const PRODUCTS = [
+  {id:1,name:'Fresas con Crema Clásico',desc:'Fresas frescas, crema batida artesanal y un toque de azúcar de vainilla.',price:12900,emoji:'🍓',category:'fresas',badge:'Más vendido'},
+  {id:2,name:'Fresas con Chocolate',desc:'Fresas bañadas en chocolate belga con crema chantilly.',price:14900,emoji:'🍫',category:'fresas'},
+  {id:3,name:'Melocotón con Crema',desc:'Melocotones en almíbar casero con crema espesa y canela.',price:13500,emoji:'🍑',category:'melocoton'},
+  {id:4,name:'Cereza con Crema',desc:'Cerezas negras frescas con crema mascarpone y polvo de cacao.',price:15900,emoji:'🍒',category:'cereza',badge:'Nuevo'},
+  {id:5,name:'Mango con Crema',desc:'Mango Tommy maduro con crema de coco y ralladura de lima.',price:13900,emoji:'🥭',category:'mango'},
+  {id:6,name:'Fresas & Melocotón Mix',desc:'Combinación perfecta de dos frutas con crema doble y granola.',price:16500,emoji:'🫐',category:'especial',badge:'Especial'},
+  {id:7,name:'Copa Tropical',desc:'Mango, cereza y fresas con crema de maracuyá y menta fresca.',price:17900,emoji:'🌴',category:'especial'},
+  {id:8,name:'Melocotón Flambeado',desc:'Melocotón flameado con caramelo de naranja y crema helada.',price:18500,emoji:'🔥',category:'especial',badge:'Chef'},
+  {id:9,name:'Fresas al Limón',desc:'Fresas marinadas en limón amarillo con crema de queso y miel.',price:14500,emoji:'🍋',category:'fresas'},
+];
+
+let cart = JSON.parse(localStorage.getItem('fcc_cart')||'[]');
+let currentFilter = 'todos';
+
+function formatPrice(n){return'$'+n.toLocaleString('es-CO')}
+
+function renderGrid(){
+  const grid=document.getElementById('grid');
+  const items=currentFilter==='todos'?PRODUCTS:PRODUCTS.filter(p=>p.category===currentFilter);
+  grid.innerHTML=items.map(p=>`
+    <div class="card" style="animation:fadeUp .4s both;animation-delay:${items.indexOf(p)*0.05}s">
+      <div class="card-img">
+        ${p.emoji}
+        ${p.badge?`<span class="badge">${p.badge}</span>`:''}
+      </div>
+      <div class="card-body">
+        <h3>${p.name}</h3>
+        <p>${p.desc}</p>
+        <div class="card-footer">
+          <div class="price">${formatPrice(p.price)} <small>COP</small></div>
+          <button class="add-btn" onclick="addToCart(${p.id})" title="Agregar al carrito">+</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filter(btn,cat){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter=cat;
+  renderGrid();
+}
+
+function addToCart(id){
+  const product=PRODUCTS.find(p=>p.id===id);
+  const existing=cart.find(i=>i.id===id);
+  if(existing) existing.qty++;
+  else cart.push({...product,qty:1});
+  saveCart();
+  updateCartUI();
+  showToast('🍓 '+product.name+' añadido al carrito');
+  bumpCount();
+}
+
+function removeFromCart(id){cart=cart.filter(i=>i.id!==id);saveCart();updateCartUI();renderDrawer()}
+function changeQty(id,delta){
+  const item=cart.find(i=>i.id===id);
+  if(!item)return;
+  item.qty+=delta;
+  if(item.qty<=0)removeFromCart(id);
+  else{saveCart();updateCartUI();renderDrawer()}
+}
+
+function saveCart(){localStorage.setItem('fcc_cart',JSON.stringify(cart))}
+function totalItems(){return cart.reduce((s,i)=>s+i.qty,0)}
+function totalPrice(){return cart.reduce((s,i)=>s+i.price*i.qty,0)}
+
+function updateCartUI(){
+  const count=totalItems();
+  document.getElementById('cartCount').textContent=count;
+}
+
+function bumpCount(){
+  const el=document.getElementById('cartCount');
+  el.classList.remove('bump');
+  void el.offsetWidth;
+  el.classList.add('bump');
+  setTimeout(()=>el.classList.remove('bump'),300);
+}
+
+function toggleDrawer(open){
+  document.getElementById('drawer').classList.toggle('open',open);
+  document.getElementById('overlay').classList.toggle('open',open);
+  if(open)renderDrawer();
+}
+
+function renderDrawer(){
+  const body=document.getElementById('drawerBody');
+  const footer=document.getElementById('drawerFooter');
+  if(!cart.length){
+    body.innerHTML=`<div class="empty-msg"><div class="big">🛒</div>Tu carrito está vacío.<br>¡Añade algo delicioso!</div>`;
+    footer.innerHTML='';
+    return;
+  }
+  body.innerHTML=cart.map(i=>`
+    <div class="cart-item">
+      <div class="ci-emoji">${i.emoji}</div>
+      <div class="ci-info">
+        <h4>${i.name}</h4>
+        <span>${formatPrice(i.price*i.qty)}</span>
+      </div>
+      <div class="ci-controls">
+        <button class="ci-btn" onclick="changeQty(${i.id},-1)">−</button>
+        <span class="ci-qty">${i.qty}</span>
+        <button class="ci-btn" onclick="changeQty(${i.id},1)">+</button>
+        <button class="ci-del" onclick="removeFromCart(${i.id})" title="Eliminar">🗑</button>
+      </div>
+    </div>
+  `).join('');
+
+  const subtotal=totalPrice();
+  const delivery=3500;
+  const total=subtotal+delivery;
+  footer.innerHTML=`
+    <div class="subtotal-row"><span>Subtotal</span><span>${formatPrice(subtotal)}</span></div>
+    <div class="subtotal-row"><span>Domicilio</span><span>${formatPrice(delivery)}</span></div>
+    <div class="subtotal-row total"><span>Total</span><span>${formatPrice(total)}</span></div>
+    <button class="checkout-btn" onclick="checkout()">Pagar ${formatPrice(total)} →</button>
+  `;
+}
+
+function checkout(){
+  showToast('✅ ¡Pedido recibido! Te contactamos pronto 🍓');
+  cart=[];saveCart();updateCartUI();
+  setTimeout(()=>toggleDrawer(false),1200);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+/* ── init ── */
+const style=document.createElement('style');
+style.textContent=`@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}`;
+document.head.appendChild(style);
+renderGrid();
+updateCartUI();
+</script>
+</body>
+</html>

@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sugerencias — Fresas con Crema</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  /* ── CATEGORÍAS ── */
+  .sug-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: .75rem;
+    margin-bottom: 1.75rem;
+  }
+  .sug-cat {
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 1rem .75rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--white);
+  }
+  .sug-cat:hover, .sug-cat.active {
+    border-color: var(--rose);
+    background: var(--rose-lt);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(232,84,122,.12);
+  }
+  .sug-cat .cat-icon { font-size: 1.8rem; margin-bottom: .35rem; display: block; }
+  .sug-cat span { font-size: .8rem; font-weight: 500; color: var(--deep); display: block; }
+
+  /* ── TARJETA FORMULARIO ── */
+  .sug-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2.25rem;
+    border: 1px solid var(--border);
+    box-shadow: 0 4px 24px rgba(232,84,122,.06);
+  }
+  .sug-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    margin-bottom: 1.25rem;
+  }
+
+  /* ── ESTRELLAS ── */
+  .rating-label { font-size: .8125rem; font-weight: 500; color: var(--deep); margin-bottom: .4rem; display: block; }
+  .rating-group { display: flex; gap: .35rem; margin-bottom: 1.1rem; }
+  .rating-star {
+    font-size: 2rem; cursor: pointer;
+    transition: transform .15s, filter .15s;
+    filter: grayscale(1); opacity: .35;
+    border: none; background: none; padding: .05rem;
+    line-height: 1;
+  }
+  .rating-star.active, .rating-star:hover { filter: none; opacity: 1; transform: scale(1.2); }
+
+  /* ── SUBMIT ── */
+  .sug-submit {
+    width: 100%; padding: .9rem; margin-top: .5rem;
+    background: linear-gradient(135deg, var(--rose), var(--rose-dk));
+    color: var(--white); border: none; border-radius: 14px;
+    font-family: inherit; font-size: .9375rem; font-weight: 500; cursor: pointer;
+    box-shadow: 0 4px 18px rgba(232,84,122,.3);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .sug-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(232,84,122,.4); }
+
+  /* ── SIDEBAR INFO ── */
+  .sug-layout { display: grid; grid-template-columns: 1.6fr 1fr; gap: 2.5rem; align-items: start; }
+  .info-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 1.65rem;
+    border: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+  .info-card h4 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 1rem; }
+  .info-item { display: flex; align-items: flex-start; gap: .65rem; margin-bottom: .9rem; }
+  .info-item:last-child { margin-bottom: 0; }
+  .info-icon { width: 34px; height: 34px; background: var(--rose-lt); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .info-item p { font-size: .8125rem; color: var(--muted); line-height: 1.55; font-weight: 300; }
+  .info-item strong { font-size: .8125rem; font-weight: 500; color: var(--deep); display: block; margin-bottom: .15rem; }
+
+  .recent-card { background: linear-gradient(135deg, var(--rose-lt), var(--cream)); border-radius: 20px; padding: 1.65rem; border: 1px solid var(--border); }
+  .recent-card h4 { font-family: 'Playfair Display', serif; font-size: 1rem; margin-bottom: 1rem; }
+  .recent-item { background: var(--white); border-radius: 12px; padding: .8rem 1rem; margin-bottom: .6rem; }
+  .recent-item:last-child { margin-bottom: 0; }
+  .recent-item .ri-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: .2rem; }
+  .recent-item strong { font-size: .8rem; font-weight: 500; }
+  .recent-item .ri-stars { font-size: .75rem; color: var(--gold); letter-spacing: 1px; }
+  .recent-item p { font-size: .775rem; color: var(--muted); line-height: 1.5; font-style: italic; }
+
+  /* ── FORM INPUTS ── */
+  .form-group { margin-bottom: 1.1rem; }
+  .form-group label { display: block; font-size: .8125rem; font-weight: 500; color: var(--deep); margin-bottom: .4rem; }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%; padding: .75rem 1rem; border: 1.5px solid var(--border);
+    border-radius: 12px; font-family: inherit; font-size: .9rem;
+    background: var(--white); color: var(--deep);
+    transition: border-color .2s, box-shadow .2s; outline: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus { border-color: var(--rose); box-shadow: 0 0 0 3px rgba(232,84,122,.12); }
+  .form-group textarea { resize: vertical; min-height: 115px; line-height: 1.6; }
+  .form-group select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239c7a87' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; }
+  .char-count { font-size: .73rem; color: var(--muted); text-align: right; margin-top: .25rem; }
+
+  /* ── ANONIMO CHECK ── */
+  .anon-check { display: flex; align-items: center; gap: .55rem; margin: .5rem 0 1rem; cursor: pointer; }
+  .anon-check input { accent-color: var(--rose); width: 16px; height: 16px; cursor: pointer; }
+  .anon-check span { font-size: .8125rem; color: var(--muted); }
+
+  @media(max-width: 860px) {
+    .sug-layout { grid-template-columns: 1fr; }
+    .sug-sidebar { order: -1; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .sug-sidebar > * { margin-bottom: 0 !important; }
+  }
+  @media(max-width: 520px) {
+    .sug-sidebar { grid-template-columns: 1fr; }
+    .sug-categories { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <a href="index.html" class="nav-logo">🍓 Fresas con Crema</a>
+  <div class="nav-links">
+    <a href="index.html">Inicio</a>
+    <a href="tienda.html">Tienda</a>
+    <a href="contacto.html">Contacto</a>
+    <a href="sugerencias.html">Sugerencias</a>
+  </div>
+  <div class="nav-actions">
+    <a href="login.html" class="nav-link-sm">Iniciar Sesión</a>
+    <a href="registro.html" class="nav-cta">Crear Cuenta</a>
+    <button class="cart-btn" id="cartBtn">🛒 <span class="cart-count">0</span></button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div class="section-tag">Tu opinión nos importa</div>
+  <h1>Cuéntanos qué <em>piensas</em></h1>
+  <p>Tus sugerencias nos ayudan a mejorar cada día. Cada mensaje es leído con mucho amor 💌</p>
+</div>
+
+<!-- CONTENIDO -->
+<section>
+  <div class="section-inner">
+    <div class="sug-layout">
+
+      <!-- FORMULARIO -->
+      <div class="sug-card">
+        <h3>Enviar sugerencia</h3>
+
+        <!-- Categorías -->
+        <span class="rating-label">¿Sobre qué nos quieres hablar?</span>
+        <div class="sug-categories">
+          <div class="sug-cat" data-cat="productos" onclick="selectCat(this)">
+            <span class="cat-icon">🍓</span><span>Productos</span>
+          </div>
+          <div class="sug-cat" data-cat="servicio" onclick="selectCat(this)">
+            <span class="cat-icon">💬</span><span>Servicio</span>
+          </div>
+          <div class="sug-cat" data-cat="domicilio" onclick="selectCat(this)">
+            <span class="cat-icon">🚚</span><span>Domicilio</span>
+          </div>
+          <div class="sug-cat" data-cat="precios" onclick="selectCat(this)">
+            <span class="cat-icon">💰</span><span>Precios</span>
+          </div>
+          <div class="sug-cat" data-cat="empaque" onclick="selectCat(this)">
+            <span class="cat-icon">📦</span><span>Empaque</span>
+          </div>
+          <div class="sug-cat" data-cat="otro" onclick="selectCat(this)">
+            <span class="cat-icon">✨</span><span>Otro</span>
+          </div>
+        </div>
+        <input type="hidden" id="sugCategory" value=""/>
+
+        <form id="sugForm">
+          <!-- Calificación -->
+          <div style="margin-bottom:1.1rem">
+            <span class="rating-label">¿Cómo calificarías tu experiencia?</span>
+            <div class="rating-group" id="starsGroup">
+              <button type="button" class="rating-star" data-val="1">⭐</button>
+              <button type="button" class="rating-star" data-val="2">⭐</button>
+              <button type="button" class="rating-star" data-val="3">⭐</button>
+              <button type="button" class="rating-star" data-val="4">⭐</button>
+              <button type="button" class="rating-star" data-val="5">⭐</button>
+            </div>
+            <input type="hidden" id="ratingVal" value="0"/>
+          </div>
+
+          <!-- Nombre -->
+          <div class="form-group">
+            <label>Tu nombre</label>
+            <input type="text" id="sugNombre" placeholder="¿Cómo te llamas?" autocomplete="name"/>
+          </div>
+          <label class="anon-check">
+            <input type="checkbox" id="anonCheck" onchange="toggleAnon(this)"/>
+            <span>Prefiero enviar esta sugerencia de forma anónima 🙈</span>
+          </label>
+
+          <!-- Correo -->
+          <div class="form-group" id="emailGroup">
+            <label>Correo electrónico <span style="color:var(--muted);font-weight:300">(opcional)</span></label>
+            <input type="email" placeholder="Para enviarte una respuesta"/>
+          </div>
+
+          <!-- Tipo de sugerencia -->
+          <div class="form-group">
+            <label>Tipo de sugerencia</label>
+            <select>
+              <option value="">Selecciona una opción</option>
+              <option>Nuevo producto o sabor</option>
+              <option>Mejora en un producto existente</option>
+              <option>Mejora en el servicio</option>
+              <option>Sugerencia de precio</option>
+              <option>Experiencia de entrega</option>
+              <option>Otra sugerencia</option>
+            </select>
+          </div>
+
+          <!-- Mensaje -->
+          <div class="form-group">
+            <label>Tu sugerencia *</label>
+            <textarea id="sugTexto" placeholder="Cuéntanos tu idea, queja o sugerencia con todo el detalle que quieras. ¡Nos encanta leerlas!" required maxlength="500" oninput="countChars(this)"></textarea>
+            <div class="char-count"><span id="charNum">0</span> / 500</div>
+          </div>
+
+          <button type="submit" class="sug-submit">Enviar sugerencia 💌</button>
+        </form>
+      </div>
+
+      <!-- SIDEBAR -->
+      <div class="sug-sidebar">
+        <div class="info-card">
+          <h4>¿Por qué compartir?</h4>
+          <div class="info-item">
+            <div class="info-icon">👂</div>
+            <div><strong>Las leemos todas</strong><p>Cada mensaje lo lee nuestro equipo con atención y cariño.</p></div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">⚡</div>
+            <div><strong>Respuesta rápida</strong><p>Si dejas tu correo te respondemos en menos de 24 horas.</p></div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🌱</div>
+            <div><strong>Nos ayudas a crecer</strong><p>Muchos de nuestros productos nacieron de sugerencias como la tuya.</p></div>
+          </div>
+          <div class="info-item">
+            <div class="info-icon">🎁</div>
+            <div><strong>Premios sorpresa</strong><p>Cada mes premiamos la mejor sugerencia con una copa gratis.</p></div>
+          </div>
+        </div>
+
+        <div class="recent-card">
+          <h4>💬 Sugerencias recientes</h4>
+          <div class="recent-item">
+            <div class="ri-top"><strong>Valentina G.</strong><span class="ri-stars">★★★★★</span></div>
+            <p>"¡Podrían hacer una versión sin azúcar? Sería increíble."</p>
+          </div>
+          <div class="recent-item">
+            <div class="ri-top"><strong>Andrés M.</strong><span class="ri-stars">★★★★☆</span></div>
+            <p>"Me encantaría que tuvieran opción de personalizar el tamaño de la porción."</p>
+          </div>
+          <div class="recent-item">
+            <div class="ri-top"><strong>Anónimo 🙈</strong><span class="ri-stars">★★★★★</span></div>
+            <p>"Excelente servicio, el domicilio llegó súper rápido y todo estaba perfecto."</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand"><span class="logo-f">🍓 Fresas con Crema</span><p>Postres artesanales hechos con amor en Medellín, Colombia desde 2019.</p></div>
+    <div class="footer-col"><h4>Páginas</h4><a href="index.html">Inicio</a><a href="tienda.html">Tienda</a><a href="contacto.html">Contacto</a><a href="sugerencias.html">Sugerencias</a></div>
+    <div class="footer-col"><h4>Cuenta</h4><a href="login.html">Iniciar Sesión</a><a href="registro.html">Crear Cuenta</a></div>
+    <div class="footer-col"><h4>Contacto</h4><a href="tel:+573001234567">+57 300 123 4567</a><a href="mailto:hola@fresasconcrema.co">hola@fresasconcrema.co</a></div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Fresas con Crema · Hecho con ❤️ en Medellín</span>
+    <div class="footer-socials"><a href="#">📸</a><a href="#">🐦</a><a href="#">💼</a></div>
+  </div>
+</footer>
+
+<!-- CART DRAWER -->
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="cartDrawer">
+  <div class="drawer-header"><h2>Tu Carrito 🛒</h2><button class="close-btn" id="closeDrawer">×</button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-footer" id="drawerFooter"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+<script>
+  // Selección de categoría
+  function selectCat(el) {
+    document.querySelectorAll('.sug-cat').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('sugCategory').value = el.dataset.cat;
+  }
+
+  // Toggle anónimo
+  function toggleAnon(cb) {
+    const nameInput = document.getElementById('sugNombre');
+    const emailGroup = document.getElementById('emailGroup');
+    nameInput.disabled = cb.checked;
+    nameInput.placeholder = cb.checked ? 'Enviando de forma anónima 🙈' : '¿Cómo te llamas?';
+    nameInput.style.opacity = cb.checked ? '.4' : '1';
+    emailGroup.style.opacity = cb.checked ? '.4' : '1';
+  }
+
+  // Contador de caracteres
+  function countChars(el) {
+    document.getElementById('charNum').textContent = el.value.length;
+  }
+
+  // Estrellas
+  const stars = document.querySelectorAll('.rating-star');
+  stars.forEach((star, i) => {
+    star.addEventListener('click', () => {
+      stars.forEach((s, j) => s.classList.toggle('active', j <= i));
+      document.getElementById('ratingVal').value = i + 1;
+    });
+    star.addEventListener('mouseenter', () => {
+      stars.forEach((s, j) => { s.style.filter = j <= i ? 'none' : 'grayscale(1)'; s.style.opacity = j <= i ? '1' : '.25'; });
+    });
+    star.addEventListener('mouseleave', () => {
+      stars.forEach(s => { s.style.filter = s.classList.contains('active') ? 'none' : 'grayscale(1)'; s.style.opacity = s.classList.contains('active') ? '1' : '.35'; });
+    });
+  });
+
+  // Submit
+  document.getElementById('sugForm').addEventListener('submit', e => {
+    e.preventDefault();
+    if (!document.getElementById('sugCategory').value) {
+      showToast('⚠️ Selecciona una categoría primero');
+      return;
+    }
+    showToast('💌 ¡Sugerencia enviada, gracias!');
+    e.target.reset();
+    document.querySelectorAll('.sug-cat').forEach(c => c.classList.remove('active'));
+    stars.forEach(s => { s.classList.remove('active'); s.style.filter = 'grayscale(1)'; s.style.opacity = '.35'; });
+    document.getElementById('ratingVal').value = 0;
+    document.getElementById('charNum').textContent = '0';
+    document.getElementById('sugNombre').disabled = false;
+    document.getElementById('sugNombre').style.opacity = '1';
+  });
+</script>
+</body>
+</html>
